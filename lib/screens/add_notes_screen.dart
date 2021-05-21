@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:notes_app/screens/home.dart';
 import 'package:notes_app/screens/home_screen.dart';
 
 class AddNotesScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
   final noteContentController = TextEditingController();
   final noteTitleController = TextEditingController();
   final databaseRef = FirebaseDatabase.instance.reference();
+  bool _validate = false;
 
   Future<void> saveNotes(String title, String content) async {
     final dbOject = databaseRef.child("Notes");
@@ -24,7 +26,7 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
     });
     Navigator.of(context).push(
       new MaterialPageRoute(
-        builder: (context) => HomeScreen(),
+        builder: (context) => Home(),
       ),
     );
   }
@@ -65,6 +67,8 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
+                  errorText:
+                      _validate ? 'Would you like to note somthing?' : null,
                 ),
                 controller: noteContentController,
               ),
@@ -75,7 +79,14 @@ class _AddNotesScreenState extends State<AddNotesScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: () {
-          saveNotes(noteTitleController.text, noteContentController.text);
+          setState(() {
+            if (noteContentController.text.isEmpty) {
+              _validate = true;
+            } else {
+              _validate = false;
+              saveNotes(noteTitleController.text, noteContentController.text);
+            }
+          });
         },
       ),
     );

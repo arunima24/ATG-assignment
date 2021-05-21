@@ -12,19 +12,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final dbRef = FirebaseDatabase.instance.reference().child("Notes");
   List<Map<dynamic, dynamic>> lists = [];
 
-  void _addNotes() {
-    Navigator.of(context).push(
-      new MaterialPageRoute(
-        builder: (context) => AddNotesScreen(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notes'),
+        title: Text('Notes List'),
       ),
       body: FutureBuilder(
           future: dbRef.once(),
@@ -42,9 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: lists.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      hoverColor: Colors.blue[100],
+                      trailing: Icon(Icons.more),
                       title: Text(
-                        lists[index]["title"],
+                        lists[index]["title"] != null
+                            ? lists[index]["title"]
+                            : Container(),
                         style: TextStyle(
                           fontSize: 20,
                         ),
@@ -61,25 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     );
                   });
-            } else if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Oopppsss !! Data cannot be retrieved. Please try again later",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-              );
             }
             return CircularProgressIndicator();
           }),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _addNotes,
-        tooltip: 'Add Notes',
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
